@@ -261,6 +261,15 @@ void i2s_std_init() {
 
   if(i2s_chan_sts == CHAN_START){
     static i2s_chan_config_t rx_chan_cfg = I2S_CHANNEL_DEFAULT_CONFIG(I2S_NUM_AUTO, I2S_ROLE_MASTER);
+
+    // add by nishi 2025.9.1
+    rx_chan_cfg.auto_clear = true; // Auto clear the legacy data in the DMA buffer
+    //rx_chan_cfg.dma_desc_num = EXAMPLE_I2S_DMA_DESC_NUM;
+    //rx_chan_cfg.dma_desc_num = 8;
+    rx_chan_cfg.dma_desc_num = 4;
+    //rx_chan_cfg.dma_frame_num = EXAMPLE_I2S_DMA_FRAME_NUM;
+    rx_chan_cfg.dma_frame_num = I2S_STD_BUFF_SIZE;
+
     ESP_ERROR_CHECK(i2s_new_channel(&rx_chan_cfg, NULL, &rx_chan));
 
     //i2s_chan_config_t channel_config = I2S_CHANNEL_DEFAULT_CONFIG(I2S_NUM_0, I2S_ROLE_MASTER);
@@ -418,21 +427,38 @@ int32_t i2s_std_getSample(uint8_t *dt,int32_t dl,int conv_type){
 int32_t i2s_std_getSample(uint8_t *dt,int32_t dl,int conv_type){
   size_t bytes_read,tatals;
   if(!init_f){
-	  i2s_std_init();
+	  //i2s_std_init();
 	  //init_f=1;
   }
   tatals=0;
+  int32_t dl_act=0;
   while(1){
     //if (i2s_channel_read(rx_handle, (char *)i2s_readraw_buff, SAMPLE_SIZE, &bytes_read, 1000) == ESP_OK) {
     if (i2s_channel_read(rx_chan, dt, dl, &bytes_read, 1000) == ESP_OK) {
-        printf("bytes_read: %d\n", bytes_read);
+        //printf("bytes_read: %d\n", bytes_read);
         //printf("[0] %d [1] %d [2] %d [3]%d ...\n", i2s_readraw_buff[0], i2s_readraw_buff[1], i2s_readraw_buff[2], i2s_readraw_buff[3]);
-        printf("[0] %d [1] %d [2] %d [3]%d ...\n", dt[0], dt[1], dt[2], dt[3]);
+        //printf("[0] %d [1] %d [2] %d [3]%d ...\n", dt[0], dt[1], dt[2], dt[3]);
         #if defined(USE_SD_CARD)
             // Write the samples to the WAV file
             fwrite(i2s_readraw_buff, bytes_read, 1, f);
         #endif
         tatals += bytes_read;
+
+        switch(conv_type){
+          case 1:{
+            //dl_act=I2S_STD_BUFF_SIZE;
+            i2s_std_mono2mono_cp_16bit(dt,dt,dl);
+            break;
+          }
+          case 2:{
+            dl_act=i2s_std_mono2stero_32000_cp_16bit(dt,dt,dl);
+            break;
+          }
+          case 0:
+            //dl_act=I2S_STD_BUFF_SIZE;
+            //memcpy(dt,ptr,I2S_STD_BUFF_SIZE);
+            break;
+        }
         break;
     } 
     else {
