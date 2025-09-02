@@ -136,7 +136,7 @@ QueueHandle_t xQueue_free;  // Freeキュー
 //#define I2S_STD_BUFF_SIZE 512/2/2
 #define I2S_STD_BUFF_SIZE 100*2
 
-static int i2s_std_mono2mono_cp_16bit(uint8_t *dst,uint8_t *src,size_t buf_len){
+inline int i2s_std_mono2mono_cp_16bit(uint8_t *dst,uint8_t *src,size_t buf_len){
 	int lp=buf_len / 2;	// samples per i2s frame
 	// I2S  32bit stereo data and 1 channel active ->  16bit mono data
     for (int i = 0; i < lp; ++i) {
@@ -147,6 +147,19 @@ static int i2s_std_mono2mono_cp_16bit(uint8_t *dst,uint8_t *src,size_t buf_len){
     }
     return buf_len;
 }
+
+//static int i2s_std_mono2mono_cp_16bit(uint8_t *dst,uint8_t *src,size_t buf_len){
+//	int lp=buf_len / 2;	// samples per i2s frame
+//	// I2S  32bit stereo data and 1 channel active ->  16bit mono data
+//    for (int i = 0; i < lp; ++i) {
+//      dst[0] = src[1];
+//      dst[1] = src[0];
+//      dst+=2;
+//      src+=2;
+//    }
+//    return buf_len;
+//}
+
 /*
   16bit mono 16000[Hz] -> 16bit 2channel 32000[Hz] に拡張する
  src[I2S_STD_BUFF_SIZE] -> dts[I2S_STD_BUFF_SIZE*2*2]
@@ -220,6 +233,8 @@ static void i2s_std_read_task(void *args)
         }
         task_cnt++;
         if(task_cnt>50){
+        //if(task_cnt>250){
+        //if(task_cnt>500){
           vTaskDelay(1);
           task_cnt=0;
         }
@@ -390,12 +405,12 @@ int32_t i2s_std_getSample(uint8_t *dt,int32_t dl,int conv_type){
         case 1:{
           dl_act=I2S_STD_BUFF_SIZE;
           i2s_std_mono2mono_cp_16bit(dt,ptr,I2S_STD_BUFF_SIZE);
+          }
           break;
-        }
         case 2:{
           dl_act=i2s_std_mono2stero_32000_cp_16bit(dt,ptr,dl);
+          }
           break;
-        }
         case 0:
           dl_act=I2S_STD_BUFF_SIZE;
           memcpy(dt,ptr,I2S_STD_BUFF_SIZE);
