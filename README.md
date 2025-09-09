@@ -11,7 +11,11 @@ ESP-EYE の方には、スピーカーがないので、I2S write 部分は、�
 
 
 #### 注)  
-[@bluekitchen/btstack](https://github.com/bluekitchen/btstack)  がバージョンアップして、使い方が変わったみたい。  
-従来のやり方もできるようだが、integrate_btstack.py がなくなってしまった。  
-btstack-old-version/port/esp32/integrate_btstack.py に、従来の Python Script を上げておいたので、  
-従来のように使ってください。  
+
+ [@bluekitchen/btstack](https://github.com/bluekitchen/btstack)  がバージョンアップして、使い方が変わったみたい。  
+ 従来のやり方もできるようだが、integrate_btstack.py がなくなってしまった。  
+ btstack-old-version/port/esp32/integrate_btstack.py に、従来の Python Script を上げておいたので、  
+ 従来のように使ってください。  
+
+ esp-idf を v6.0 にしたら、Mic の音が、Host PC からでなくなった。  
+ この場合、esp-idf v5.5 に戻して、sdkconfig.org-2025.8.29 を sdkconfig コピーして、再ビルドして試してください。  
