@@ -40,6 +40,7 @@ static uint8_t buffer_in[DMA_BUFFER_SAMPLES*2];
 static uint8_t samples_in[DMA_BUFFER_SAMPLES*2];
 
 static int call_count=0;
+static int t_cnt=0;
 
 // read samples from the microphone and send them off to bluetooth
 static void copy_samples(void)
@@ -82,8 +83,11 @@ static void copy_samples(void)
         int c_cnt=1;
         bytes_read = i2s_std_getSample(samples_in,DMA_BUFFER_SAMPLES*2,conv_type);
         while(bytes_read==0){
-            if((c_cnt % 4)==0)
+            t_cnt++;
+            if(t_cnt > 50){
                 vTaskDelay(1);
+                t_cnt=0;
+            }
             if(bytes_read==0){
                 //ESP_LOGI(BT_AV_TAG, "%s #2 dt_l=%i", __func__,dt_l);
             }

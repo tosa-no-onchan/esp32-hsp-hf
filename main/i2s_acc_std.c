@@ -232,6 +232,7 @@ static void i2s_std_read_task(void *args)
           }
         }
         task_cnt++;
+        //if(task_cnt>20){
         if(task_cnt>50){
         //if(task_cnt>250){
         //if(task_cnt>500){
