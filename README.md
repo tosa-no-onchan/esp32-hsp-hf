@@ -8,3 +8,10 @@ ESP-EYE の方には、スピーカーがないので、I2S write 部分は、�
 ##### 参照。  
 詳しくは、下記ページをみとうせ!!  
 [ESP-EYE マイク を bluetooth で、PC につなげて聞きたい。](https://www.netosa.com/blog/2025/08/esp-eye-bluetooth-pc.html)  
+
+
+#### 注)  
+[@bluekitchen/btstack](https://github.com/bluekitchen/btstack)  がバージョンアップして、使い方が変わったみたい。  
+従来のやり方もできるようだが、integrate_btstack.py がなくなってしまった。  
+btstack-old-version/port/esp32/integrate_btstack.py に、従来の Python Script を上げておいたので、  
+従来のように使ってください。  
